@@ -5,10 +5,12 @@
 exports.up = function(knex) {
   return knex.schema.createTable('chores', table => {
     table.increments();
+    table.timestamp('created_at', { precision: 2 }).defaultTo(knex.fn.now(2));
     table.string('chore_name');
-    table.string('chore_frequency');
+    table.string('chore_value');
     table.boolean('completed');
-    table.integer('responsible_party').references('humans.id');
+    table.integer('completed_by').defaultTo(0);
+    table.timestamp('completed_at');
   })
 };
 
@@ -17,9 +19,5 @@ exports.up = function(knex) {
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-  return knex.schema.alterTable('chores', table =>{
-    table.dropForeign('responsible_party')
-  }).then(function(){
-    return knex.schema.dropTable('chores')
-  })
+  return knex.schema.dropTable('chores')
 };
